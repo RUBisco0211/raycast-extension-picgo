@@ -1,5 +1,3 @@
-import { showToast, Toast } from "@raycast/api";
-import { rejects } from "assert";
 import fs from "fs";
 import path from "path";
 

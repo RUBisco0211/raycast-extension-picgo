@@ -1,5 +1,3 @@
-import { CloudManager, IConfig, IUploaderConfigItem } from "picgo";
-
 import { Form, Icon } from "@raycast/api";
 import { getConfigList } from "../util/context";
 

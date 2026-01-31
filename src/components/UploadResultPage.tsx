@@ -1,6 +1,6 @@
 import { type IImgInfo } from "picgo";
 
-import { Action, ActionPanel, Form, Icon, List } from "@raycast/api";
+import { Action, ActionPanel, Icon, List } from "@raycast/api";
 import { exportFormats } from "../util/format";
 import ImagesMetadataPanel from "./ImagesMetadataPanel";
 
