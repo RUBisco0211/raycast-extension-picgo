@@ -2,12 +2,11 @@
     "$schema": "https://www.raycast.com/schemas/extension.json",
     "name": "picgo",
     "title": "PicGo",
-    "description": "",
+    "description": "Easily use PicGo to upload your images to image hosts in Raycast.",
     "icon": "extension-icon.png",
     "author": "rubisco0211",
     "platforms": [
-        "macOS",
-        "Windows"
+        "macOS"
     ],
     "categories": [
         "Applications",
@@ -16,8 +15,8 @@
     "license": "MIT",
     "commands": [
         {
-            "name": "upload-images-via-picgo",
-            "title": "Upload Images via PicGo",
+            "name": "upload-images",
+            "title": "Upload Images",
             "description": "Upload your images through PicGo-Core.",
             "mode": "view",
             "icon": "picgo-logo.png"
