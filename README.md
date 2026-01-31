@@ -1,5 +1,7 @@
 # PicGo for Raycast
 
+[简体中文](./README-zh.md)
+
 A [Raycast](https://www.raycast.com/) extension to upload images to image hosts using [PicGo-Core](https://github.com/PicGo/PicGo-Core) API.
 
 ## How It Works
@@ -11,7 +13,6 @@ This extension integrates with `picgo` library to handle image uploads.
 - **Select and Send Images**: Select images (allow multi selection) from file picker or paste from clipboard `Cmd+V`. .
 
 - **Copy Result**: Choose your preferred format (URL, Markdown, HTML, or UBB) and copy to clipboard.
--
 
 ## ScreenShots
 

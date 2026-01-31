@@ -1,5 +1,7 @@
 # PicGo for Raycast
 
+[English](./README.md)
+
 一个使用 [PicGo-Core](https://github.com/PicGo/PicGo-Core) API 上传图片到图床的 [Raycast](https://www.raycast.com/) 扩展。
 
 ## 工作原理
