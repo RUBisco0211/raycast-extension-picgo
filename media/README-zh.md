@@ -1,11 +1,11 @@
 # PicGo for Raycast
 
-[English](./README.md)
+[English](../README.md)
 
 一个使用 [PicGo-Core](https://github.com/PicGo/PicGo-Core) API 上传图片到图床的 [Raycast](https://www.raycast.com/) 扩展。
 
 <p align="center">
-  <img src="./docs/header.png" alt="">
+  <img src="./header.png" alt="">
 </p>
 
 ## 工作原理
@@ -22,15 +22,15 @@
 
 ### `Upload Images via PicGo` 命令面板
 
-![Command](./docs/command.png)
+![Command](./command.png)
 
 ### 上传配置
 
-![Config](./docs//config.png)
+![Config](./config.png)
 
 ### 导出页面
 
-![Export](./docs/export.png)
+![Export](./export.png)
 
 ## 前置条件：PicGo 安装和配置
 
