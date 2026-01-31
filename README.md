@@ -4,6 +4,10 @@
 
 A [Raycast](https://www.raycast.com/) extension to upload images to image hosts using [PicGo-Core](https://github.com/PicGo/PicGo-Core) API.
 
+<p align="center">
+  <img src="./docs/header.png" alt="">
+</p>
+
 ## How It Works
 
 This extension integrates with `picgo` library to handle image uploads.

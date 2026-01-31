@@ -4,6 +4,10 @@
 
 一个使用 [PicGo-Core](https://github.com/PicGo/PicGo-Core) API 上传图片到图床的 [Raycast](https://www.raycast.com/) 扩展。
 
+<p align="center">
+  <img src="./docs/header.png" alt="">
+</p>
+
 ## 工作原理
 
 该扩展集成 `picgo` 库来处理图片上传。
