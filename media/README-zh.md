@@ -20,17 +20,21 @@
 
 ## 截图
 
-### `Upload Images via PicGo` 命令面板
+### `Upload Images` 命令面板
 
-![Command](./command.png)
+![Command](./picgo-1.png)
 
 ### 上传配置
 
-![Config](./config.png)
+![Config](./picgo-2.png)
+
+### 快捷键
+
+![Shortcuts](./picgo-3.png)
 
 ### 导出页面
 
-![Export](./export.png)
+![Export](./picgo-4.png)
 
 ## 前置条件：PicGo 安装和配置
 

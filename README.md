@@ -20,17 +20,21 @@ This extension integrates with `picgo` library to handle image uploads.
 
 ## ScreenShots
 
-### Command `Upload Images via PicGo` and Actions
+### Command `Upload Images` and Actions
 
-![Command](./media/command.png)
+![Command](./media/picgo-1.png)
 
 ### Uploader Configs
 
-![Config](./media/config.png)
+![Config](./media/picgo-2.png)
+
+### Shortcuts
+
+![Shortcuts](./media/picgo-3.png)
 
 ### Export Page
 
-![Export](./media/export.png)
+![Export](./media/picgo-4.png)
 
 ## Prerequisites: PicGo Installation and Configuration
 

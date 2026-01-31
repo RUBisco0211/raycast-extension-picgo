@@ -19,7 +19,7 @@
             "title": "Upload Images",
             "description": "Upload your images through PicGo-Core.",
             "mode": "view",
-            "icon": "picgo-logo.png"
+            "icon": "extension-icon.png"
         }
     ],
     "preferences": [
