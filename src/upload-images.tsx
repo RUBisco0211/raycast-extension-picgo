@@ -64,9 +64,6 @@ export default function Command() {
         const err = e as Error;
         console.error(err);
         showToast(Toast.Style.Failure, err.message);
-        console.log(getActiveUploaderType(), configName);
-        console.log(configName);
-        console.log(localConfig);
         return <ErrorView msg={err.message} />;
     }
 
