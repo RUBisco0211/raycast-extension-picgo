@@ -58,8 +58,8 @@ export default function Command() {
         if (isLoading) return;
         if (localConfig && isAvailableConfig(localConfig)) setConfig(localConfig);
         else {
-            console.warn(
-                `LocalStorage config ${JSON.stringify(localConfig)} not available, config state fallback to default config ${JSON.stringify(initialConfig)}`,
+            console.info(
+                `LocalStorage config '${JSON.stringify(localConfig)}' not available, config state fallback to default config '${JSON.stringify(initialConfig)}'`,
             );
             setConfig(initialConfig);
         }
@@ -184,8 +184,8 @@ export default function Command() {
             />
             <Form.Description
                 title="Quick Tips"
-                // text={`• ⌘ + V: Quick Upload from Clipboard\n• ⌘ + Enter: Submit and upload`}
-                text={JSON.stringify(localConfig)}
+                text={`• ⌘ + V: Quick Upload from Clipboard\n• ⌘ + Enter: Submit and upload`}
+                // text={JSON.stringify(localConfig)}
             />
         </Form>
     );
