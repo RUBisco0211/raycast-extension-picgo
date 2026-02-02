@@ -6,12 +6,14 @@ export default function () {
     const getActiveUploaderType = () => ctx.getConfig<string>("picBed.uploader");
     const uploaderTypeList = ctx.uploaderConfig.listUploaderTypes();
 
-    function getConfigList(type: string) {
+    function getConfigList(type?: string) {
+        if (!type) type = getActiveUploaderType();
         if (!uploaderTypeList.find((t) => t === type)) throw new Error(`Uploader type '${type}' not found`);
         return ctx.uploaderConfig.getConfigList(type);
     }
 
-    function getActiveConfig(type: string) {
+    function getActiveConfig(type?: string) {
+        if (!type) type = getActiveUploaderType();
         if (!uploaderTypeList.find((t) => t === type)) throw new Error(`Uploader type '${type}' not found`);
         return ctx.uploaderConfig.getActiveConfig(type);
     }
