@@ -1,4 +1,4 @@
-import { IConfig as IPicGoConfig, IUploaderConfigItem } from "picgo";
+import { IConfig, IUploaderConfigItem } from "picgo";
 
 declare module "picgo" {
     export interface IConfig {
