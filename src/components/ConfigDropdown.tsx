@@ -1,5 +1,6 @@
 import { Form, Icon } from "@raycast/api";
 import { IUploaderConfigItem } from "picgo";
+import { UserUploaderConfig } from "../types/type";
 
 interface Props {
     uploaderTypes: string[];
@@ -12,9 +13,9 @@ export default function ConfigDropdownList({ uploaderTypes, getConfigList }: Pro
             {(() => {
                 return getConfigList(t).map((cfg) => (
                     <Form.Dropdown.Item
-                        key={cfg._configName}
+                        key={`${t}.${cfg._configName}`}
                         icon={Icon.Cog}
-                        value={JSON.stringify({ type: t, configName: cfg._configName })}
+                        value={JSON.stringify({ uploaderType: t, configName: cfg._configName } as UserUploaderConfig)}
                         title={cfg._configName}
                     />
                 ));
