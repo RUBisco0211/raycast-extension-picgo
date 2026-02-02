@@ -2,6 +2,7 @@ import {
     Action,
     ActionPanel,
     Form,
+    List,
     Clipboard,
     Icon,
     showToast,
@@ -19,7 +20,7 @@ import UploadResultPage from "./components/UploadResultPage";
 import ErrorView from "./components/ErrorView";
 import usePicGoContext from "./util/context";
 import { useLocalStorage } from "@raycast/utils";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const UPLOADER_CONFIG_KEY = "picgo:user_uploader_config";
 
@@ -41,51 +42,67 @@ export default function Command() {
         value: localConfig,
         isLoading,
         setValue: setLocalConfig,
+        removeValue: removeLocalConfig,
     } = useLocalStorage<UserUploaderConfig>(UPLOADER_CONFIG_KEY);
+    const initialConfig: UserUploaderConfig = {
+        uploaderType: getActiveUploaderType(),
+        configName: getActiveConfig()?._configName,
+        configId: getActiveConfig()?._id,
+    };
 
-    const [config, setConfig] = useState<UserUploaderConfig | undefined>(() => {
-        if (localConfig && isAvailableConfig(localConfig)) return localConfig;
-        else return { uploaderType: getActiveUploaderType(), configName: getActiveConfig()?._configName };
-    });
+    const [config, setConfig] = useState<UserUploaderConfig | undefined>();
+    const [error, setError] = useState<Error | undefined>();
+    const [isUploading, setUploading] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (isLoading) return;
+        if (localConfig && isAvailableConfig(localConfig)) setConfig(localConfig);
+        else {
+            console.warn(
+                `LocalStorage config ${JSON.stringify(localConfig)} not available, config state fallback to default config ${JSON.stringify(initialConfig)}`,
+            );
+            setConfig(initialConfig);
+        }
+    }, [isLoading]);
+
+    useEffect(() => {
+        try {
+            if (!isAvailableConfig(initialConfig)) {
+                removeLocalConfig();
+                throw new Error("No available config");
+            }
+        } catch (e) {
+            const err = e as Error;
+            console.error(err);
+            setError(err);
+            showToast(Toast.Style.Failure, err.message);
+        }
+    }, []);
 
     const dropdownItems = useMemo(() => {
         return <ConfigDropdownList uploaderTypes={uploaderTypeList} getConfigList={getConfigList} />;
     }, [uploaderTypeList]);
 
-    let configName: string | undefined;
-
-    try {
-        configName = getActiveConfig()?._configName;
-        if (config && isAvailableConfig(config)) syncConfig(config);
-        else if (!configName) throw new Error("No available config");
-        // early remove LocalStorage, and in next render, config state will fallback to first config and be synced to context
-    } catch (e) {
-        const err = e as Error;
-        console.error(err);
-        showToast(Toast.Style.Failure, err.message);
-        return <ErrorView msg={err.message} />;
-    }
-
     async function uploadImgs(input?: string[]) {
-        const toast = await showToast(
-            Toast.Style.Animated,
-            "Uploading...",
-            `${config!.uploaderType} [${config!.configName}]`,
-        );
+        setUploading(true);
+        const toast = await showToast(Toast.Style.Animated, "Uploading...");
         try {
             const timeout = Number(uploadTimeout);
             const res = await withTimeout(ctx.upload(input), timeout, `Upload timeout: ${timeout / 1000}s`);
+
             if (res instanceof Error) throw res;
-            if (res.length === 0) throw new Error("No result returned");
+            if (res.length === 0) throw new Error("No results returned");
             const urls = res.filter((r) => r.imgUrl).map((r) => r.imgUrl);
-            if (urls.length === 0) throw new Error("No url result returned");
+            if (urls.length === 0) throw new Error("No url results returned");
 
             toast.style = Toast.Style.Success;
             toast.title = "Success";
+
             push(<UploadResultPage result={res} />);
         } catch (err) {
             const e = err as Error;
             console.error("Upload failed:", e);
+
             toast.style = Toast.Style.Failure;
             toast.title = "Upload Failed";
             toast.message = e.message;
@@ -93,10 +110,12 @@ export default function Command() {
                 title: "Copy Error Log",
                 shortcut: { modifiers: ["cmd", "shift"], key: "f" },
                 onAction: (toast) => {
-                    Clipboard.copy(JSON.stringify(e.stack));
+                    Clipboard.copy(`${e.stack ?? e.message}`);
                     toast.hide();
                 },
             };
+        } finally {
+            setUploading(false);
         }
     }
 
@@ -105,7 +124,7 @@ export default function Command() {
         const config = JSON.parse(uploaderConfig) as UserUploaderConfig;
         // config is available
         await setLocalConfig(config);
-        syncConfig(config); // maybe redundant
+        syncConfig(config);
         const imgs = files.filter((f) => isImgFile(f));
         if (imgs.length === 0) {
             showToast(Toast.Style.Failure, "Error", "Please pick image files.");
@@ -118,13 +137,18 @@ export default function Command() {
         await uploadImgs();
     }
 
-    if (isLoading) {
-        return <Form actions={null} isLoading={true} />;
+    if (error) {
+        return <ErrorView msg={error.message} />;
     }
+
+    if (isLoading || !config) {
+        return <List isLoading />;
+    }
+
+    if (isUploading) return <List isLoading />;
 
     return (
         <Form
-            isLoading={isLoading}
             actions={
                 <ActionPanel>
                     <Action.SubmitForm title="Upload Image" icon={Icon.Upload} onSubmit={handleFilesUpload} />
@@ -139,7 +163,6 @@ export default function Command() {
             }
         >
             <Form.Dropdown
-                isLoading={isLoading}
                 id="uploaderConfig"
                 title="Uploader Config"
                 value={JSON.stringify(config)}
@@ -161,7 +184,8 @@ export default function Command() {
             />
             <Form.Description
                 title="Quick Tips"
-                text={`• ⌘ + V: Quick Upload from Clipboard\n• ⌘ + Enter: Submit and upload`}
+                // text={`• ⌘ + V: Quick Upload from Clipboard\n• ⌘ + Enter: Submit and upload`}
+                text={JSON.stringify(localConfig)}
             />
         </Form>
     );

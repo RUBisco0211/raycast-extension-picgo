@@ -1,4 +1,4 @@
-import { List, Icon, Action, ActionPanel } from "@raycast/api";
+import { List, Icon, Action, ActionPanel, Color } from "@raycast/api";
 
 type Props = {
     msg?: string;
@@ -8,7 +8,7 @@ export default function ErrorView({ msg }: Props) {
     return (
         <List>
             <List.EmptyView
-                icon={Icon.Warning}
+                icon={{ source: Icon.Warning, tintColor: Color.Red }}
                 title={msg ?? "Fail to Load PicGo Config"}
                 description="Make sure you installed picgo and setup configs"
                 actions={

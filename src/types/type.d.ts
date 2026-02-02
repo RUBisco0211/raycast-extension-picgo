@@ -14,4 +14,5 @@ export type UploadFormData = {
 export type UserUploaderConfig = {
     uploaderType: string;
     configName?: string;
+    configId?: string;
 };

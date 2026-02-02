@@ -13,9 +13,13 @@ export default function ConfigDropdownList({ uploaderTypes, getConfigList }: Pro
             {(() => {
                 return getConfigList(t).map((cfg) => (
                     <Form.Dropdown.Item
-                        key={`${t}.${cfg._configName}`}
+                        key={cfg._id}
                         icon={Icon.Cog}
-                        value={JSON.stringify({ uploaderType: t, configName: cfg._configName } as UserUploaderConfig)}
+                        value={JSON.stringify({
+                            uploaderType: t,
+                            configName: cfg._configName,
+                            configId: cfg._id,
+                        } as UserUploaderConfig)}
                         title={cfg._configName}
                     />
                 ));
