@@ -1,4 +1,5 @@
 import { PicGo } from "picgo";
+import { UserUploaderConfig } from "../types/type";
 
 export default function () {
     const ctx = new PicGo();
@@ -18,14 +19,16 @@ export default function () {
         return ctx.uploaderConfig.getActiveConfig(type);
     }
 
-    function isAvailableConfig(type: string, configName?: string) {
+    function isAvailableConfig(config: UserUploaderConfig) {
+        const { uploaderType: type, configName } = config;
         if (!configName) return false;
         if (!uploaderTypeList.find((t) => t === type)) return false;
         if (!getConfigList(type).find((cfg) => cfg._configName === configName)) return false;
         return true;
     }
 
-    function syncConfig(type: string, configName: string) {
+    function syncConfig(config: UserUploaderConfig) {
+        const { uploaderType: type, configName } = config;
         if (!configName) throw new Error("ConfigName undefined");
         if (!uploaderTypeList.find((t) => t === type)) throw new Error(`Uploader type '${type}' not found`);
         const cfg = getConfigList(type).find((c) => c._configName == configName)!;

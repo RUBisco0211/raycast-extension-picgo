@@ -7,7 +7,7 @@ export type ImgUrlExportFormat = {
 };
 
 export type UploadFormData = {
-    uploader_config: string;
+    uploaderConfig: string;
     files: string[];
 };
 

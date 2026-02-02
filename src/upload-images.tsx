@@ -19,7 +19,7 @@ import UploadResultPage from "./components/UploadResultPage";
 import ErrorView from "./components/ErrorView";
 import usePicGoContext from "./util/context";
 import { useLocalStorage } from "@raycast/utils";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 const UPLOADER_CONFIG_KEY = "picgo:user_uploader_config";
 
@@ -43,23 +43,22 @@ export default function Command() {
         setValue: setLocalConfig,
     } = useLocalStorage<UserUploaderConfig>(UPLOADER_CONFIG_KEY);
 
+    const [config, setConfig] = useState<UserUploaderConfig | undefined>(() => {
+        if (localConfig && isAvailableConfig(localConfig)) return localConfig;
+        else return { uploaderType: getActiveUploaderType(), configName: getActiveConfig()?._configName };
+    });
+
     const dropdownItems = useMemo(() => {
         return <ConfigDropdownList uploaderTypes={uploaderTypeList} getConfigList={getConfigList} />;
     }, [uploaderTypeList]);
 
-    if (isLoading) {
-        console.log("loading");
-        return <Form actions={null} isLoading={true} />;
-    }
-
     let configName: string | undefined;
 
     try {
-        configName = getActiveConfig(getActiveUploaderType())?._configName;
-        if (localConfig && isAvailableConfig(localConfig.uploaderType, localConfig.configName))
-            syncConfig(localConfig.uploaderType, localConfig.configName!);
+        configName = getActiveConfig()?._configName;
+        if (config && isAvailableConfig(config)) syncConfig(config);
         else if (!configName) throw new Error("No available config");
-        // else: do nothing, localConfig will fallback to the first config and sync to context in the next render
+        // early remove LocalStorage, and in next render, config state will fallback to first config and be synced to context
     } catch (e) {
         const err = e as Error;
         console.error(err);
@@ -71,7 +70,7 @@ export default function Command() {
         const toast = await showToast(
             Toast.Style.Animated,
             "Uploading...",
-            `${localConfig!.uploaderType} [${localConfig!.configName}]`,
+            `${config!.uploaderType} [${config!.configName}]`,
         );
         try {
             const timeout = Number(uploadTimeout);
@@ -102,7 +101,11 @@ export default function Command() {
     }
 
     async function handleFilesUpload(data: UploadFormData) {
-        const { files } = data;
+        const { uploaderConfig, files } = data;
+        const config = JSON.parse(uploaderConfig) as UserUploaderConfig;
+        // config is available
+        await setLocalConfig(config);
+        syncConfig(config); // maybe redundant
         const imgs = files.filter((f) => isImgFile(f));
         if (imgs.length === 0) {
             showToast(Toast.Style.Failure, "Error", "Please pick image files.");
@@ -113,6 +116,10 @@ export default function Command() {
 
     async function handleClipboardUpload() {
         await uploadImgs();
+    }
+
+    if (isLoading) {
+        return <Form actions={null} isLoading={true} />;
     }
 
     return (
@@ -133,12 +140,12 @@ export default function Command() {
         >
             <Form.Dropdown
                 isLoading={isLoading}
-                id="uploader_config"
+                id="uploaderConfig"
                 title="Uploader Config"
-                value={JSON.stringify(localConfig)}
-                onChange={async (data) => {
+                value={JSON.stringify(config)}
+                onChange={(data) => {
                     const cfg = JSON.parse(data) as UserUploaderConfig;
-                    await setLocalConfig(cfg);
+                    setConfig(cfg);
                 }}
             >
                 {dropdownItems}
