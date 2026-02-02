@@ -1,3 +1,5 @@
+import usePicGoContext from "../util/context";
+
 export type ImgUrlExportFormat = {
     name: string;
     label: string;
@@ -10,6 +12,6 @@ export type UploadFormData = {
 };
 
 export type UserUploaderConfig = {
-    type?: string;
+    uploaderType: string;
     configName?: string;
 };

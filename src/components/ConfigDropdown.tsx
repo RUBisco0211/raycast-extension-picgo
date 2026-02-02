@@ -1,11 +1,12 @@
 import { Form, Icon } from "@raycast/api";
-import { getConfigList } from "../util/context";
+import { IUploaderConfigItem } from "picgo";
 
 interface Props {
     uploaderTypes: string[];
+    getConfigList: (s: string) => IUploaderConfigItem[];
 }
 
-export default function ConfigDropdownList({ uploaderTypes }: Props) {
+export default function ConfigDropdownList({ uploaderTypes, getConfigList }: Props) {
     return uploaderTypes.map((t) => (
         <Form.Dropdown.Section key={t} title={t}>
             {(() => {

@@ -6,51 +6,75 @@ import {
     Icon,
     showToast,
     Toast,
-    List,
     useNavigation,
     openExtensionPreferences,
     getPreferenceValues,
 } from "@raycast/api";
 
-import useUploaderConfig from "./hooks/config";
 import ConfigDropdownList from "./components/ConfigDropdown";
-import { uploaderTypes, initialConfig } from "./util/context";
 import type { UserUploaderConfig, UploadFormData } from "./types/type";
 import { isImgFile } from "./util/util";
-import { ctx } from "./util/context";
 import { withTimeout } from "./util/util";
 import UploadResultPage from "./components/UploadResultPage";
+import ErrorView from "./components/ErrorView";
+import usePicGoContext from "./util/context";
+import { useLocalStorage } from "@raycast/utils";
+import { useMemo } from "react";
+
+const UPLOADER_CONFIG_KEY = "picgo:user_uploader_config";
 
 export default function Command() {
-    if (!initialConfig.type || !initialConfig.configName) {
-        return (
-            <List>
-                <List.EmptyView
-                    icon={Icon.Warning}
-                    title="Fail to Load PicGo Config"
-                    description="Make sure you installed picgo and setup configs"
-                    actions={
-                        <ActionPanel>
-                            <Action.OpenInBrowser
-                                title="View Installation Guide"
-                                url="https://docs.picgo.app/core/"
-                            ></Action.OpenInBrowser>
-                        </ActionPanel>
-                    }
-                ></List.EmptyView>
-            </List>
-        );
-    }
-    const { uploaderConfig, setUploaderConfig, isLoading } = useUploaderConfig(initialConfig);
-    const { push } = useNavigation();
+    const {
+        ctx,
+        getActiveUploaderType,
+        getActiveConfig,
+        isAvailableConfig,
+        syncConfig,
+        uploaderTypeList,
+        getConfigList,
+    } = usePicGoContext();
 
+    const { push } = useNavigation();
     const { uploadTimeout } = getPreferenceValues<ExtensionPreferences>();
+
+    const {
+        value: localConfig,
+        isLoading,
+        setValue: setLocalConfig,
+    } = useLocalStorage<UserUploaderConfig>(UPLOADER_CONFIG_KEY);
+
+    const dropdownItems = useMemo(() => {
+        return <ConfigDropdownList uploaderTypes={uploaderTypeList} getConfigList={getConfigList} />;
+    }, [uploaderTypeList]);
+
+    if (isLoading) {
+        console.log("loading");
+        return <Form actions={null} isLoading={true} />;
+    }
+
+    let configName: string | undefined;
+
+    try {
+        configName = getActiveConfig(getActiveUploaderType())?._configName;
+        if (localConfig && isAvailableConfig(localConfig.uploaderType, localConfig.configName))
+            syncConfig(localConfig.uploaderType, localConfig.configName!);
+        else if (!configName) throw new Error("No available config");
+        // else: do nothing, localConfig will fallback to the first config and sync to context in the next render
+    } catch (e) {
+        const err = e as Error;
+        console.error(err);
+        showToast(Toast.Style.Failure, err.message);
+        console.log(getActiveUploaderType(), configName);
+        console.log(configName);
+        console.log(localConfig);
+        return <ErrorView msg={err.message} />;
+    }
 
     async function uploadImgs(input?: string[]) {
         const toast = await showToast(
             Toast.Style.Animated,
             "Uploading...",
-            `${uploaderConfig?.type} [${uploaderConfig?.configName}]`,
+            `${localConfig!.uploaderType} [${localConfig!.configName}]`,
         );
         try {
             const timeout = Number(uploadTimeout);
@@ -94,8 +118,6 @@ export default function Command() {
         await uploadImgs();
     }
 
-    if (isLoading) return <Form actions={null} isLoading={true} />;
-
     return (
         <Form
             isLoading={isLoading}
@@ -116,13 +138,13 @@ export default function Command() {
                 isLoading={isLoading}
                 id="uploader_config"
                 title="Uploader Config"
-                value={JSON.stringify(uploaderConfig)}
+                value={JSON.stringify(localConfig)}
                 onChange={async (data) => {
                     const cfg = JSON.parse(data) as UserUploaderConfig;
-                    await setUploaderConfig(cfg);
+                    await setLocalConfig(cfg);
                 }}
             >
-                <ConfigDropdownList uploaderTypes={uploaderTypes}></ConfigDropdownList>
+                {dropdownItems}
             </Form.Dropdown>
             <Form.Separator />
             <Form.FilePicker

@@ -1,57 +1,50 @@
-import { showToast, Toast } from "@raycast/api";
 import { PicGo } from "picgo";
-import { UserUploaderConfig } from "../types/type";
 
-const getActiveUploaderType = () => {
-    try {
-        return ctx.getConfig<string>("picBed.uploader");
-    } catch (e) {
-        console.error("Fail to load PicGo config", e);
-        showToast(Toast.Style.Failure, "Error", "Fail to load PicGo config");
-        return "";
+export default function () {
+    const ctx = new PicGo();
+
+    const getActiveUploaderType = () => ctx.getConfig<string>("picBed.uploader");
+    const uploaderTypeList = ctx.uploaderConfig.listUploaderTypes();
+
+    function getConfigList(type: string) {
+        if (!uploaderTypeList.find((t) => t === type)) throw new Error(`Uploader type '${type}' not found`);
+        return ctx.uploaderConfig.getConfigList(type);
     }
-};
 
-const getUploadersTypes = () => {
-    try {
-        return ctx.uploaderConfig.listUploaderTypes() ?? [];
-    } catch (e) {
-        console.error("Fail to load PicGo config", e);
-        showToast(Toast.Style.Failure, "Error", "Fail to load PicGo config");
-        return [];
+    function getActiveConfig(type: string) {
+        if (!uploaderTypeList.find((t) => t === type)) throw new Error(`Uploader type '${type}' not found`);
+        return ctx.uploaderConfig.getActiveConfig(type);
     }
-};
 
-export const getConfigList = (t?: string) => {
-    try {
-        if (!t) t = getActiveUploaderType();
-        return ctx.uploaderConfig.getConfigList(t);
-    } catch (e) {
-        console.error("Fail to load PicGo config", e);
-        showToast(Toast.Style.Failure, "Error", "Fail to load PicGo config");
-        return [];
+    function isAvailableConfig(type: string, configName?: string) {
+        if (!configName) return false;
+        if (!uploaderTypeList.find((t) => t === type)) return false;
+        if (!getConfigList(type).find((cfg) => cfg._configName === configName)) return false;
+        return true;
     }
-};
 
-const getActiveConfig = (t?: string) => {
-    try {
-        if (!t) t = getActiveUploaderType();
-        return ctx.uploaderConfig.getActiveConfig(t);
-    } catch (e) {
-        console.error("Fail to load PicGo config", e);
-        showToast(Toast.Style.Failure, "Error", "Fail to load PicGo config");
-        return;
+    function syncConfig(type: string, configName: string) {
+        if (!configName) throw new Error("ConfigName undefined");
+        if (!uploaderTypeList.find((t) => t === type)) throw new Error(`Uploader type '${type}' not found`);
+        const cfg = getConfigList(type).find((c) => c._configName == configName)!;
+        if (!cfg) throw new Error(`Config name '${configName}' not found for uploader type '${type}'`);
+        ctx.setConfig({
+            "picBed.uploader": type,
+            "picBed.current": type,
+            [`picBed.${type}`]: cfg,
+            [`uploader.${type}.defaultId`]: cfg._id,
+        });
     }
-};
 
-export const syncConfig = (t: string, configName?: string) => {
-    ctx.uploaderConfig.use(t, configName);
-};
+    return {
+        ctx,
+        uploaderTypeList,
 
-export const ctx = new PicGo();
+        getActiveUploaderType,
+        getConfigList,
+        getActiveConfig,
 
-export const uploaderTypes = getUploadersTypes();
-export const initialConfig: UserUploaderConfig = {
-    type: getActiveUploaderType(),
-    configName: getActiveConfig()?._configName,
-};
+        isAvailableConfig,
+        syncConfig,
+    };
+}
