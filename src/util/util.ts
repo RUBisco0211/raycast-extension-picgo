@@ -18,7 +18,7 @@ export function isImgFile(p: string) {
 
 export function withTimeout<T>(promise: Promise<T>, ms: number = 30000, errMsg?: string) {
     const timeout = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error(errMsg ?? `Timeout: ${ms / 10000}s`)), ms);
+        setTimeout(() => reject(new Error(errMsg ?? `Timeout: ${ms / 1000}s`)), ms);
     });
     return Promise.race([promise, timeout]);
 }
