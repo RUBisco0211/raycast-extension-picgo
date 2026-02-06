@@ -36,7 +36,7 @@ export default function Command() {
     } = usePicGoContext();
 
     const { push } = useNavigation();
-    const { uploadTimeout } = getPreferenceValues<ExtensionPreferences>();
+    const { uploadTimeout } = getPreferenceValues<Preferences>();
 
     const {
         value: localConfig,

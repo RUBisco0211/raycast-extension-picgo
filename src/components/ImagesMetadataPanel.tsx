@@ -10,7 +10,7 @@ export default function ImagesMetadataPanel({ result }: Props) {
         return (
             <List.Item.Detail.Metadata>
                 {Object.keys(result[0]).map((k) => (
-                    <List.Item.Detail.Metadata.Label key={`img.${k}`} title={k} text={result[0][k]} />
+                    <List.Item.Detail.Metadata.Label key={`img.${k}`} title={k} text={result[0][k] ?? ""} />
                 ))}
             </List.Item.Detail.Metadata>
         );
@@ -21,7 +21,7 @@ export default function ImagesMetadataPanel({ result }: Props) {
                 if (i !== 0) labels.unshift(<List.Item.Detail.Metadata.Separator key={`separator[${i}]`} />);
                 labels.push(
                     ...Object.keys(r).map((k) => (
-                        <List.Item.Detail.Metadata.Label key={`img[${i}].${k}`} title={k} text={r[k]} />
+                        <List.Item.Detail.Metadata.Label key={`img[${i}].${k}`} title={k} text={r[k] ?? ""} />
                     )),
                 );
                 return labels;
