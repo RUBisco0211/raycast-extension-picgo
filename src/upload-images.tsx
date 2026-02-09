@@ -18,7 +18,7 @@ import { isImgFile } from "./util/util";
 import { withTimeout } from "./util/util";
 import UploadResultPage from "./components/UploadResultPage";
 import ErrorView from "./components/ErrorView";
-import usePicGoContext from "./util/context";
+import getPicGoContext from "./util/context";
 import { useLocalStorage } from "@raycast/utils";
 import { useEffect, useMemo, useState } from "react";
 
@@ -31,9 +31,9 @@ export default function Command() {
         getActiveConfig,
         isAvailableConfig,
         syncConfig,
-        uploaderTypeList,
+        getUploaderTypeList,
         getConfigList,
-    } = usePicGoContext();
+    } = getPicGoContext();
 
     const { push } = useNavigation();
     const { uploadTimeout } = getPreferenceValues<Preferences>();
@@ -80,8 +80,8 @@ export default function Command() {
     }, []);
 
     const dropdownItems = useMemo(() => {
-        return <ConfigDropdownList uploaderTypes={uploaderTypeList} getConfigList={getConfigList} />;
-    }, [uploaderTypeList]);
+        return <ConfigDropdownList uploaderTypes={getUploaderTypeList()} getConfigList={getConfigList} />;
+    }, []);
 
     async function uploadImgs(input?: string[]) {
         setUploading(true);
