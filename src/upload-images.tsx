@@ -30,7 +30,7 @@ export default function Command() {
         getActiveUploaderType,
         getActiveConfig,
         isAvailableConfig,
-        syncConfig,
+        setActiveConfig,
         getUploaderTypeList,
         getConfigList,
     } = getPicGoContext();
@@ -124,7 +124,7 @@ export default function Command() {
         const config = JSON.parse(uploaderConfig) as UserUploaderConfig;
         // config is available
         await setLocalConfig(config);
-        syncConfig(config);
+        setActiveConfig(config);
         const imgs = files.filter((f) => isImgFile(f));
         if (imgs.length === 0) {
             showToast(Toast.Style.Failure, "Error", "Please pick image files.");

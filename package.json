@@ -20,6 +20,20 @@
             "description": "Upload your images through PicGo-Core.",
             "mode": "view",
             "icon": "extension-icon.png"
+        },
+        {
+            "name": "plugin-management",
+            "title": "Plugin Management",
+            "description": "Manage your PicGo plugins.",
+            "mode": "view",
+            "icon": "extension-icon.png"
+        },
+        {
+            "name": "uploader-management",
+            "title": "Uploader Config Management",
+            "description": "Manage your PicGo uploader configurations.",
+            "mode": "view",
+            "icon": "extension-icon.png"
         }
     ],
     "preferences": [

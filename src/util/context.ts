@@ -30,7 +30,7 @@ export default function () {
         return true;
     }
 
-    function syncConfig(config: UserUploaderConfig) {
+    function setActiveConfig(config: UserUploaderConfig) {
         const { uploaderType: type, configId } = config;
         if (!configId) throw new Error("ConfigName undefined");
         if (!getUploaderTypeList().find((t) => t === type)) throw new Error(`Uploader type '${type}' not found`);
@@ -45,17 +45,20 @@ export default function () {
         ctx.uploaderConfig.use(type, cfg._configName);
     }
 
-    function getUploaderConfigItemDetails(type: string, configName: string) {
-        return ctx.helper.uploader.get(type)?.config!(ctx);
+    function getUploaderConfigItemDetails(type: string) {
+        return ctx.helper.uploader.get(type)?.config!(ctx) ?? [];
     }
 
-    const copyConfig = (type: string, oldName: string, newName: string) => {
+    const copyConfig = (type: string, oldName: string, newName: string) =>
         ctx.uploaderConfig.copy(type, oldName, newName);
-    };
+
     const removeConfig = (type: string, configName: string) => ctx.uploaderConfig.remove(type, configName);
-    const renameConfig = ctx.uploaderConfig.rename;
+
+    const renameConfig = (type: string, oldName: string, newName: string) =>
+        ctx.uploaderConfig.rename(type, oldName, newName);
+
     const createOrUpdateConfig = (type: string, config: IUploaderConfigItem) => {
-        return ctx.uploaderConfig.createOrUpdate(type, config._configName, config);
+        ctx.uploaderConfig.createOrUpdate(type, config._configName, config);
     };
 
     return {
@@ -67,7 +70,7 @@ export default function () {
         getActiveConfig,
 
         isAvailableConfig,
-        syncConfig,
+        setActiveConfig,
 
         getUploaderConfigItemDetails,
 
