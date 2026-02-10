@@ -69,7 +69,7 @@ export default function Command() {
     const handleInstall = async (item: NPMSearchObject) => {
         const toast = await showToast(Toast.Style.Animated, `Installing ${item.package.name}`);
         try {
-            const res = await installPlugin(item.package.name);
+            const res = await installPlugin([item.package.name]);
             if (!res.success) {
                 throw new Error(`Failed to install '${item.package.name}'`, {
                     cause: res.body,
@@ -150,11 +150,9 @@ export default function Command() {
                                 icon={Icon.Download}
                                 onAction={() => handleInstall(item)}
                             ></Action>
-                            <Action.OpenInBrowser title="Open in NPM Page" url={item.package.links.npm} />
-
+                            <Action.OpenInBrowser title="Open in Browser" url={item.package.links.npm} />
                             <Action.OpenInBrowser
                                 title="View Awesome-PicGo"
-                                icon={Icon.Stars}
                                 url="https://github.com/PicGo/Awesome-PicGo"
                             />
                         </ActionPanel>
@@ -200,19 +198,6 @@ export default function Command() {
                                     <List.Item.Detail.Metadata.Label
                                         title="Dependents"
                                         text={item.dependents.toString()}
-                                    />
-                                    <List.Item.Detail.Metadata.Separator />
-                                    <List.Item.Detail.Metadata.Label
-                                        title="Quality Score"
-                                        text={item.score.detail.quality.toFixed(2)}
-                                    />
-                                    <List.Item.Detail.Metadata.Label
-                                        title="Popularity Score"
-                                        text={item.score.detail.popularity.toFixed(2)}
-                                    />
-                                    <List.Item.Detail.Metadata.Label
-                                        title="Maintenance Score"
-                                        text={item.score.detail.maintenance.toFixed(2)}
                                     />
                                 </List.Item.Detail.Metadata>
                             }

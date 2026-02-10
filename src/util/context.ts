@@ -7,7 +7,7 @@ import { getPreferenceValues } from "@raycast/api";
 import { withTimeout } from "./util";
 
 export default function () {
-    const { npmPath, uploadTimeout } = getPreferenceValues<Preferences>();
+    const { npmPath, uploadTimeout, npmMirror, npmProxy, proxy } = getPreferenceValues<Preferences>();
     const processEnv = {
         ...env,
         PATH: [npmPath, env.PATH].join(path.delimiter),
@@ -16,6 +16,8 @@ export default function () {
     const ctxRef = useRef<PicGo | null>(null);
     if (!ctxRef.current) ctxRef.current = new PicGo();
     const ctx = ctxRef.current;
+
+    ctx.saveConfig({ "picBed.proxy": proxy.trim() });
 
     const getActiveUploaderType = () => ctx.getConfig<string>("picBed.uploader");
     const getUploaderTypeList = () => ctx.uploaderConfig.listUploaderTypes();
@@ -73,7 +75,7 @@ export default function () {
 
         upload,
 
-        getUploaderConfigItemDetails: (type: string) => ctx.helper.uploader.get(type)?.config!(ctx) ?? [],
+        getUploaderConfigItemDetails: (type: string) => ctx.helper.uploader.get(type)?.config?.(ctx) ?? [],
         createOrUpdateConfig: (type: string, config: IUploaderConfigItem) =>
             ctx.uploaderConfig.createOrUpdate(type, config._configName, config),
         copyConfig: (type: string, oldName: string, newName: string) => ctx.uploaderConfig.copy(type, oldName, newName),
@@ -86,8 +88,10 @@ export default function () {
         getPlugin: (name: string) => ctx.pluginLoader.getPlugin(name),
         hasPlugin: (name: string) => ctx.pluginLoader.hasPlugin(name),
 
-        installPlugin: (name: string) => ctx.pluginHandler.install([name], undefined, processEnv),
-        updatePlugin: (name: string) => ctx.pluginHandler.update([name], undefined, processEnv),
-        uninstallPlugin: (name: string) => ctx.pluginHandler.uninstall([name]),
+        installPlugin: (names: string[]) =>
+            ctx.pluginHandler.install(names, { npmProxy, npmRegistry: npmMirror }, processEnv),
+        updatePlugin: (names: string[]) =>
+            ctx.pluginHandler.update(names, { npmProxy, npmRegistry: npmMirror }, processEnv),
+        uninstallPlugin: (names: string[]) => ctx.pluginHandler.uninstall(names, processEnv),
     };
 }

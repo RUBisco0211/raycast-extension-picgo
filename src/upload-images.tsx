@@ -9,7 +9,6 @@ import {
     Toast,
     useNavigation,
     openExtensionPreferences,
-    getPreferenceValues,
 } from "@raycast/api";
 
 import ConfigDropdownList from "./components/ConfigDropdown";
@@ -36,7 +35,6 @@ export default function Command() {
     } = getPicGoContext();
 
     const { push } = useNavigation();
-    const { uploadTimeout } = getPreferenceValues<Preferences>();
 
     const {
         value: localConfig,
@@ -159,7 +157,7 @@ export default function Command() {
         return <List isLoading />;
     }
 
-    if (isUploading) return <List isLoading />;
+    if (isUploading) return <Form isLoading />;
 
     return (
         <Form
@@ -199,7 +197,6 @@ export default function Command() {
             <Form.Description
                 title="Quick Tips"
                 text={`• ⌘ + V: Quick Upload from Clipboard\n• ⌘ + Enter: Submit and upload`}
-                // text={JSON.stringify(localConfig)}
             />
         </Form>
     );

@@ -1,4 +1,4 @@
-import { List, Icon, useNavigation, ActionPanel, Action, confirmAlert, Alert, Color } from "@raycast/api";
+import { List, Icon, ActionPanel, Action, confirmAlert, Alert, Color } from "@raycast/api";
 import getPicGoContext from "./util/context";
 import { IPluginConfig, IUploaderConfigItem } from "picgo";
 import ConfigEditForm from "./components/ConfigEditForm";
@@ -48,9 +48,10 @@ export default function Command() {
         () => (type: string, config: IUploaderConfigItem) => {
             const accessories = [];
             if (isActiveConfig(type, config._id)) {
-                accessories.push({ icon: { source: Icon.Check, tintColor: Color.Blue } });
+                accessories.push({ icon: { source: Icon.Check } });
+
                 if (isActiveUploader(type)) {
-                    accessories.push({ text: { value: "Default", color: Color.Blue } });
+                    accessories.push({ text: { value: "Default" } });
                 }
             }
             return accessories;
@@ -156,7 +157,7 @@ export default function Command() {
                                     ></Action.Push>
                                     <Action.Push
                                         title={`Add New Config`}
-                                        icon={Icon.Plus}
+                                        icon={Icon.PlusCircle}
                                         shortcut={{ modifiers: ["cmd", "shift"], key: "n" }}
                                         onPop={() => {
                                             setUpdated(!updated);
@@ -173,8 +174,8 @@ export default function Command() {
                                     />
 
                                     <Action
-                                        title="Copy Config"
-                                        icon={Icon.CopyClipboard}
+                                        title="Duplicate Config"
+                                        icon={Icon.Duplicate}
                                         shortcut={{ modifiers: ["cmd", "shift"], key: "c" }}
                                         onAction={() => {
                                             try {

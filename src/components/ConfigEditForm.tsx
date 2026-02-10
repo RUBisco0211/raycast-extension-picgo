@@ -1,4 +1,4 @@
-import { FormValidation, useForm } from "@raycast/utils";
+import { useForm } from "@raycast/utils";
 import { Form, useNavigation, ActionPanel, Action, Icon, showToast, Toast } from "@raycast/api";
 import type { IPluginConfig, IUploaderConfigItem } from "picgo";
 import { useEffect, useMemo, useState } from "react";
@@ -31,15 +31,16 @@ export default function ConfigEditForm({
 
     const { pop } = useNavigation();
 
-    const { handleSubmit, setValue, values, itemProps } = useForm<IUploaderConfigItem>({
+    const { handleSubmit, setValue, itemProps } = useForm<IUploaderConfigItem>({
         onSubmit(value) {
-            if (!config || value._configName.trim() === config?._configName) {
-                createOrUpdateConfig(uploader, value);
-                onSave?.();
-                pop();
-                return;
+            const configItemKeys = [...configItems.map((i) => i.name), "_configName"];
+            for (const k in value) {
+                if (configItemKeys.includes(k)) continue;
+                delete value[k];
             }
-            renameConfig(uploader, config._configName, value._configName);
+            if (config && value._configName !== config._configName)
+                renameConfig(uploader, config._configName, value._configName);
+            // config === undefined means it's create mode
             createOrUpdateConfig(uploader, value);
             onSave?.();
             pop();
@@ -64,15 +65,11 @@ export default function ConfigEditForm({
 
     useEffect(() => {
         // clear config when uploader type changes (different uploaders have different config forms)
-        Object.keys(values)
-            .filter((key) => key !== "_configName")
-            .forEach((key) => {
-                setValue(key, undefined);
-            });
         configItems.forEach((item) => {
             if (item.default) setValue(item.name, item.default);
+            else setValue(item.name, undefined);
         });
-    }, [uploader]);
+    }, [uploader, configItems]);
 
     return (
         <Form
