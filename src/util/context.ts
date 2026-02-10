@@ -1,8 +1,18 @@
 import { PicGo, IUploaderConfigItem } from "picgo";
 import { UserUploaderConfig } from "../types/type";
 import { useRef } from "react";
+import { env } from "process";
+import path from "path";
+import { getPreferenceValues } from "@raycast/api";
+import { withTimeout } from "./util";
 
 export default function () {
+    const { npmPath, uploadTimeout } = getPreferenceValues<Preferences>();
+    const processEnv = {
+        ...env,
+        PATH: [npmPath, env.PATH].join(path.delimiter),
+    };
+
     const ctxRef = useRef<PicGo | null>(null);
     if (!ctxRef.current) ctxRef.current = new PicGo();
     const ctx = ctxRef.current;
@@ -45,21 +55,10 @@ export default function () {
         ctx.uploaderConfig.use(type, cfg._configName);
     }
 
-    function getUploaderConfigItemDetails(type: string) {
-        return ctx.helper.uploader.get(type)?.config!(ctx) ?? [];
+    async function upload(input?: string[]) {
+        const timeout = Number(uploadTimeout);
+        return await withTimeout(ctx.upload(input), timeout, `Upload timeout: ${timeout / 1000}s`);
     }
-
-    const copyConfig = (type: string, oldName: string, newName: string) =>
-        ctx.uploaderConfig.copy(type, oldName, newName);
-
-    const removeConfig = (type: string, configName: string) => ctx.uploaderConfig.remove(type, configName);
-
-    const renameConfig = (type: string, oldName: string, newName: string) =>
-        ctx.uploaderConfig.rename(type, oldName, newName);
-
-    const createOrUpdateConfig = (type: string, config: IUploaderConfigItem) => {
-        ctx.uploaderConfig.createOrUpdate(type, config._configName, config);
-    };
 
     return {
         ctx: ctx,
@@ -72,11 +71,23 @@ export default function () {
         isAvailableConfig,
         setActiveConfig,
 
-        getUploaderConfigItemDetails,
+        upload,
 
-        createOrUpdateConfig,
-        copyConfig,
-        removeConfig,
-        renameConfig,
+        getUploaderConfigItemDetails: (type: string) => ctx.helper.uploader.get(type)?.config!(ctx) ?? [],
+        createOrUpdateConfig: (type: string, config: IUploaderConfigItem) =>
+            ctx.uploaderConfig.createOrUpdate(type, config._configName, config),
+        copyConfig: (type: string, oldName: string, newName: string) => ctx.uploaderConfig.copy(type, oldName, newName),
+        removeConfig: (type: string, configName: string) => ctx.uploaderConfig.remove(type, configName),
+        renameConfig: (type: string, oldName: string, newName: string) =>
+            ctx.uploaderConfig.rename(type, oldName, newName),
+
+        getInstalledPluginNameList: () => ctx.pluginLoader.getFullList(),
+        getEnabledPluginNameList: () => ctx.pluginLoader.getList(),
+        getPlugin: (name: string) => ctx.pluginLoader.getPlugin(name),
+        hasPlugin: (name: string) => ctx.pluginLoader.hasPlugin(name),
+
+        installPlugin: (name: string) => ctx.pluginHandler.install([name], undefined, processEnv),
+        updatePlugin: (name: string) => ctx.pluginHandler.update([name], undefined, processEnv),
+        uninstallPlugin: (name: string) => ctx.pluginHandler.uninstall([name]),
     };
 }

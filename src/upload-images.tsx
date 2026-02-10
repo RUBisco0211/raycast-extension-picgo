@@ -15,18 +15,18 @@ import {
 import ConfigDropdownList from "./components/ConfigDropdown";
 import type { UserUploaderConfig, UploadFormData } from "./types/type";
 import { isImgFile } from "./util/util";
-import { withTimeout } from "./util/util";
 import UploadResultPage from "./components/UploadResultPage";
 import ErrorView from "./components/ErrorView";
 import getPicGoContext from "./util/context";
 import { useLocalStorage } from "@raycast/utils";
 import { useEffect, useMemo, useState } from "react";
+import UploaderManagement from "./uploader-management";
 
 const UPLOADER_CONFIG_KEY = "picgo:user_uploader_config";
 
 export default function Command() {
     const {
-        ctx,
+        upload,
         getActiveUploaderType,
         getActiveConfig,
         isAvailableConfig,
@@ -58,7 +58,7 @@ export default function Command() {
         if (isLoading) return;
         if (localConfig && isAvailableConfig(localConfig)) setConfig(localConfig);
         else {
-            console.info(
+            console.warn(
                 `LocalStorage config '${JSON.stringify(localConfig)}' not available, config state fallback to default config '${JSON.stringify(initialConfig)}'`,
             );
             setConfig(initialConfig);
@@ -73,7 +73,7 @@ export default function Command() {
             }
         } catch (e) {
             const err = e as Error;
-            console.error(err);
+            console.warn(error?.message);
             setError(err);
             showToast(Toast.Style.Failure, err.message);
         }
@@ -87,8 +87,7 @@ export default function Command() {
         setUploading(true);
         const toast = await showToast(Toast.Style.Animated, "Uploading...");
         try {
-            const timeout = Number(uploadTimeout);
-            const res = await withTimeout(ctx.upload(input), timeout, `Upload timeout: ${timeout / 1000}s`);
+            const res = await upload(input);
 
             if (res instanceof Error) throw res;
             if (res.length === 0) throw new Error("No results returned");
@@ -138,7 +137,22 @@ export default function Command() {
     }
 
     if (error) {
-        return <ErrorView msg={error.message} />;
+        return (
+            <ErrorView
+                error={error}
+                description="Make sure you setup uploader configs"
+                actions={
+                    <ActionPanel>
+                        <Action.Push
+                            title="Setup Uploader Configs"
+                            icon={Icon.Cog}
+                            target={<UploaderManagement />}
+                        ></Action.Push>
+                        <Action.OpenInBrowser url="https://docs.picgo.app/core/" title="View Installation Guide" />
+                    </ActionPanel>
+                }
+            />
+        );
     }
 
     if (isLoading || !config) {

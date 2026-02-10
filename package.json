@@ -22,15 +22,22 @@
             "icon": "extension-icon.png"
         },
         {
+            "name": "plugin-search",
+            "title": "Search Plugins",
+            "description": "Search PicGo plugins on NPM.",
+            "mode": "view",
+            "icon": "extension-icon.png"
+        },
+        {
             "name": "plugin-management",
-            "title": "Plugin Management",
-            "description": "Manage your PicGo plugins.",
+            "title": "Manage Plugins",
+            "description": "Manage your local PicGo plugins.",
             "mode": "view",
             "icon": "extension-icon.png"
         },
         {
             "name": "uploader-management",
-            "title": "Uploader Config Management",
+            "title": "Manage Uploader Configs",
             "description": "Manage your PicGo uploader configurations.",
             "mode": "view",
             "icon": "extension-icon.png"
@@ -44,6 +51,14 @@
             "title": "Upload Timeout (ms)",
             "description": "Custom timeout for PicGo upload process",
             "default": "30000"
+        },
+        {
+            "name": "npmPath",
+            "type": "directory",
+            "required": false,
+            "title": "NPM Path",
+            "description": "Custom path to NPM executable (exclude npm itself, e.g. /usr/local/bin instead of /usr/local/bin/npm)",
+            "default": "/usr/local/bin"
         }
     ],
     "dependencies": {

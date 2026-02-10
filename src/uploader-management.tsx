@@ -48,9 +48,9 @@ export default function Command() {
         () => (type: string, config: IUploaderConfigItem) => {
             const accessories = [];
             if (isActiveConfig(type, config._id)) {
-                accessories.push({ icon: Icon.Check });
+                accessories.push({ icon: { source: Icon.Check, tintColor: Color.Blue } });
                 if (isActiveUploader(type)) {
-                    accessories.push({ text: { value: "Default", color: Color.Green } });
+                    accessories.push({ text: { value: "Default", color: Color.Blue } });
                 }
             }
             return accessories;
@@ -61,6 +61,37 @@ export default function Command() {
         const val = String(cfg[item.name]!);
         return item.type === "password" ? "*".repeat(val.length) : val;
     };
+
+    if (Object.keys(configMap).flatMap((type) => configMap[type]).length === 0) {
+        return (
+            <List>
+                <List.EmptyView
+                    title="No Uploader Configs Found"
+                    actions={
+                        <ActionPanel>
+                            <Action.Push
+                                title={`Add New Config`}
+                                icon={Icon.Plus}
+                                shortcut={{ modifiers: ["cmd", "shift"], key: "n" }}
+                                onPop={() => {
+                                    setUpdated(!updated);
+                                }}
+                                target={
+                                    <ConfigEditForm
+                                        type={getUploaderTypeList()[0]}
+                                        getUploaderTypeList={getUploaderTypeList}
+                                        getConfigItems={getUploaderConfigItemDetails}
+                                        createOrUpdateConfig={createOrUpdateConfig}
+                                        renameConfig={renameConfig}
+                                    />
+                                }
+                            />
+                        </ActionPanel>
+                    }
+                />
+            </List>
+        );
+    }
 
     return (
         <List isShowingDetail>
