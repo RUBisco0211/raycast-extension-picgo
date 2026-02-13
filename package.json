@@ -87,7 +87,7 @@
             "title": "NPM Path",
             "description": "Custom path to NPM executable (exclude npm itself, e.g. '/usr/local/bin' instead of '/usr/local/bin/npm')",
             "placeholder": "Exclude npm itself, e.g. '/usr/local/bin' instead of '/usr/local/bin/npm'",
-            "default": "/usr/local/bin"
+            "default": ""
         },
         {
             "name": "npmProxy",
