@@ -8,6 +8,7 @@ const fileName = (img: IImgInfo) =>
     img.fileName?.replace(new RegExp(`\\${img.extname}`), "") ?? img.imgUrl?.split("/").pop()?.split(".")[0] ?? "image";
 const extName = (img: IImgInfo) => img.extname ?? "." + img.imgUrl?.split(".").pop();
 
+/** Extension point: add new keys with name, label, generate(imgs) for extra copy formats. */
 export const exportFormats: Record<string, ImgUrlExportFormat> = {
     url: {
         name: "url",

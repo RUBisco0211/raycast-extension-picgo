@@ -81,6 +81,23 @@
             "default": ""
         },
         {
+            "name": "enableGithubPathByDate",
+            "type": "checkbox",
+            "required": false,
+            "label": "GitHub: Use date-based path (custom dir / year / month)",
+            "description": "When ON, GitHub uploads use path = your prefix + year + month. When OFF, use your uploader config path as-is.",
+            "default": false
+        },
+        {
+            "name": "githubPathPrefix",
+            "type": "textfield",
+            "required": false,
+            "title": "GitHub Path Prefix",
+            "description": "Base directory when date-based path is enabled (e.g. 'images' → images/2025/02). Ignored when the switch above is OFF.",
+            "placeholder": "e.g. images",
+            "default": "images"
+        },
+        {
             "name": "npmPath",
             "type": "textfield",
             "required": false,
