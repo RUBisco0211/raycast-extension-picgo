@@ -1,3 +1,7 @@
+/**
+ * PicGo context: single PicGo instance shared by all commands.
+ * Extension point: add pre/post logic in upload(), or expose new helpers here.
+ */
 import { PicGo, IUploaderConfigItem } from "picgo";
 import { UserUploaderConfig } from "../types/type";
 import { useRef } from "react";
@@ -7,7 +11,8 @@ import { getPreferenceValues } from "@raycast/api";
 import { withTimeout } from "./util";
 
 export default function () {
-    const { npmPath, uploadTimeout, npmMirror, npmProxy, proxy } = getPreferenceValues<Preferences>();
+    const { npmPath, uploadTimeout, npmMirror, npmProxy, proxy, enableGithubPathByDate, githubPathPrefix } =
+        getPreferenceValues<Preferences>();
     const processEnv = {
         ...env,
         PATH: [npmPath, env.PATH].join(path.delimiter),
@@ -57,7 +62,24 @@ export default function () {
         ctx.uploaderConfig.use(type, cfg._configName);
     }
 
+    /** Extension point: wrap or replace ctx.upload(input) for pre/post upload hooks. */
     async function upload(input?: string[]) {
+        const activeType = getActiveUploaderType();
+        if (
+            enableGithubPathByDate &&
+            activeType === "github" &&
+            githubPathPrefix?.trim() &&
+            getUploaderTypeList().includes("github")
+        ) {
+            const active = getActiveConfig("github");
+            if (active) {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, "0");
+                const pathValue = `${githubPathPrefix.trim()}/${year}/${month}`;
+                ctx.uploaderConfig.createOrUpdate("github", active._configName, { ...active, path: pathValue });
+            }
+        }
         const timeout = Number(uploadTimeout);
         return await withTimeout(ctx.upload(input), timeout, `Upload timeout: ${timeout / 1000}s`);
     }
