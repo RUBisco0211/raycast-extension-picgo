@@ -5,11 +5,9 @@ import { useEffect, useMemo, useState } from "react";
 import getPicGoContext from "../util/context";
 
 type Props = {
-    mode: "create" | "update";
-    type: string;
-    config?: IUploaderConfigItem;
     picgo: ReturnType<typeof getPicGoContext>;
-};
+    type: string;
+} & ({ mode: "create"; config?: undefined } | { mode: "update"; config: IUploaderConfigItem });
 
 /**
  * Render a form for creating or updating an uploader configuration.
