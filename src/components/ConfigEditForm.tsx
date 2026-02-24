@@ -11,6 +11,18 @@ type Props = {
     picgo: ReturnType<typeof getPicGoContext>;
 };
 
+/**
+ * Render a form for creating or updating an uploader configuration.
+ *
+ * Renders fields for the selected uploader type, populates initial values when `config` is provided,
+ * validates required fields, and saves or renames the configuration via the provided `picgo` context.
+ *
+ * @param mode - "create" to add a new configuration or "update" to edit an existing one
+ * @param type - The uploader type to display or preselect
+ * @param config - Existing uploader configuration used to populate form fields when updating; omit for create mode
+ * @param picgo - PicGo context exposing uploader list, item details, rename, and createOrUpdate operations
+ * @returns The form UI for creating or editing an uploader configuration
+ */
 export default function ConfigEditForm({ mode, type, config, picgo }: Props) {
     const { getUploaderTypeList, getUploaderConfigItemDetails, renameConfig, createOrUpdateConfig } = picgo;
     const [uploader, setUploader] = useState<string>(type);
