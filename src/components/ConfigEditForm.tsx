@@ -2,31 +2,21 @@ import { useForm } from "@raycast/utils";
 import { Form, useNavigation, ActionPanel, Action, Icon, showToast, Toast } from "@raycast/api";
 import type { IPluginConfig, IUploaderConfigItem } from "picgo";
 import { useEffect, useMemo, useState } from "react";
+import getPicGoContext from "../util/context";
 
 type Props = {
+    mode: "create" | "update";
     type: string;
-    getConfigItems: (type: string) => IPluginConfig[];
     config?: IUploaderConfigItem;
-    onSave?: () => any;
-    getUploaderTypeList: () => string[];
-    createOrUpdateConfig: (type: string, config: IUploaderConfigItem) => void;
-    renameConfig: (type: string, oldName: string, newName: string) => void;
+    picgo: ReturnType<typeof getPicGoContext>;
 };
 
-export default function ConfigEditForm({
-    type,
-    config,
-    getConfigItems,
-    onSave,
-    getUploaderTypeList,
-    createOrUpdateConfig,
-    renameConfig,
-}: Props) {
+export default function ConfigEditForm({ mode, type, config, picgo }: Props) {
+    const { getUploaderTypeList, getUploaderConfigItemDetails, renameConfig, createOrUpdateConfig } = picgo;
     const [uploader, setUploader] = useState<string>(type);
     const configItems = useMemo(() => {
-        // config === undefined means it's create mode
-        if (config) return getConfigItems(type);
-        return getConfigItems(uploader);
+        if (mode === "update") return getUploaderConfigItemDetails(type);
+        return getUploaderConfigItemDetails(uploader);
     }, [uploader]);
 
     const { pop } = useNavigation();
@@ -38,11 +28,9 @@ export default function ConfigEditForm({
                 if (configItemKeys.includes(k)) continue;
                 delete value[k];
             }
-            if (config && value._configName !== config._configName)
+            if (mode === "update" && value._configName !== config._configName)
                 renameConfig(uploader, config._configName, value._configName);
-            // config === undefined means it's create mode
             createOrUpdateConfig(uploader, value);
-            onSave?.();
             pop();
             showToast({ title: "Save successfully", style: Toast.Style.Success });
         },

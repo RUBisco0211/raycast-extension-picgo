@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { showFailureToast } from "@raycast/utils";
 
 export default function Command() {
+    const picgo = getPicGoContext();
     const {
         getActiveUploaderType,
         getUploaderConfigItemDetails,
@@ -15,10 +16,8 @@ export default function Command() {
         setActiveConfig,
         copyConfig,
         removeConfig,
-        renameConfig,
-        createOrUpdateConfig,
         ctx,
-    } = getPicGoContext();
+    } = picgo;
 
     const [error, setError] = useState<Error | undefined>(undefined);
     const [updated, setUpdated] = useState<boolean>(false);
@@ -77,15 +76,7 @@ export default function Command() {
                                 onPop={() => {
                                     setUpdated(!updated);
                                 }}
-                                target={
-                                    <ConfigEditForm
-                                        type={getUploaderTypeList()[0]}
-                                        getUploaderTypeList={getUploaderTypeList}
-                                        getConfigItems={getUploaderConfigItemDetails}
-                                        createOrUpdateConfig={createOrUpdateConfig}
-                                        renameConfig={renameConfig}
-                                    />
-                                }
+                                target={<ConfigEditForm mode="create" type={getUploaderTypeList()[0]} picgo={picgo} />}
                             />
                         </ActionPanel>
                     }
@@ -146,12 +137,10 @@ export default function Command() {
                                         }}
                                         target={
                                             <ConfigEditForm
+                                                mode="update"
                                                 type={type}
-                                                getConfigItems={getUploaderConfigItemDetails}
-                                                getUploaderTypeList={getUploaderTypeList}
-                                                createOrUpdateConfig={createOrUpdateConfig}
-                                                renameConfig={renameConfig}
                                                 config={{ ...cfg }}
+                                                picgo={picgo}
                                             />
                                         }
                                     ></Action.Push>
@@ -162,15 +151,7 @@ export default function Command() {
                                         onPop={() => {
                                             setUpdated(!updated);
                                         }}
-                                        target={
-                                            <ConfigEditForm
-                                                type={type}
-                                                getUploaderTypeList={getUploaderTypeList}
-                                                getConfigItems={getUploaderConfigItemDetails}
-                                                createOrUpdateConfig={createOrUpdateConfig}
-                                                renameConfig={renameConfig}
-                                            />
-                                        }
+                                        target={<ConfigEditForm mode="create" type={type} picgo={picgo} />}
                                     />
 
                                     <Action
