@@ -1,6 +1,6 @@
 import { useForm } from "@raycast/utils";
 import { Form, useNavigation, ActionPanel, Action, Icon, showToast, Toast } from "@raycast/api";
-import type { IPluginConfig, IUploaderConfigItem } from "picgo";
+import type { IUploaderConfigItem } from "picgo";
 import { useEffect, useMemo, useState } from "react";
 import getPicGoContext from "../util/context";
 

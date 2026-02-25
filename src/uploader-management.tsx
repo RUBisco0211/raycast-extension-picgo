@@ -1,6 +1,6 @@
 import { List, Icon, ActionPanel, Action, confirmAlert, Alert, Color } from "@raycast/api";
 import getPicGoContext from "./util/context";
-import { IPluginConfig, IUploaderConfigItem } from "picgo";
+import type { IPluginConfig, IUploaderConfigItem } from "picgo";
 import ConfigEditForm from "./components/ConfigEditForm";
 import { useEffect, useMemo, useState } from "react";
 import { showFailureToast } from "@raycast/utils";
