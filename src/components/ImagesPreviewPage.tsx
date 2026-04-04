@@ -1,20 +1,19 @@
-import { ActionPanel, Action, Grid, Icon } from '@raycast/api';
+import { ActionPanel, Action, Grid, Icon } from "@raycast/api";
 import { IImgInfo } from "picgo";
-import { exportFormats } from '../util/format';
-import { useMemo, useState } from 'react';
-import FormatListPage from './FormatListPage';
-
+import { exportFormats } from "../util/format";
+import { useMemo, useState } from "react";
+import FormatListPage from "./FormatListPage";
 
 interface Props {
-    imgs: IImgInfo[]
+    imgs: IImgInfo[];
 }
 
 export default function ImagesPreviewPage({ imgs }: Props) {
     if (imgs.length === 0) {
-        return <Grid.EmptyView title='No Content'></Grid.EmptyView>
+        return <Grid.EmptyView title="No Content"></Grid.EmptyView>;
     }
-    const [formatKey, setFormatKey] = useState<keyof typeof exportFormats>('url')
-    const format = useMemo(() => exportFormats[formatKey]!, [formatKey])
+    const [formatKey, setFormatKey] = useState<keyof typeof exportFormats>("url");
+    const format = useMemo(() => exportFormats[formatKey]!, [formatKey]);
 
     return (
         <Grid
@@ -36,7 +35,7 @@ export default function ImagesPreviewPage({ imgs }: Props) {
                     content={img.imgUrl!}
                     title={img.fileName}
                     subtitle={img.imgUrl}
-                    accessory={{ icon:Icon.Link, tooltip: img.imgUrl }}
+                    accessory={{ icon: Icon.Link, tooltip: img.imgUrl }}
                     actions={
                         <ActionPanel>
                             <Action.CopyToClipboard
@@ -48,7 +47,7 @@ export default function ImagesPreviewPage({ imgs }: Props) {
                                 content={format.generate(imgs)}
                             />
                             <Action.Push
-                                title='Switch to Format List View'
+                                title="Switch to Format List View"
                                 icon={Icon.Switch}
                                 target={<FormatListPage result={imgs} />}
                             />
