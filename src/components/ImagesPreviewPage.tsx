@@ -1,7 +1,7 @@
 import { ActionPanel, Action, Grid, Icon, getPreferenceValues, Clipboard, showToast, Toast } from "@raycast/api";
 import { IImgInfo } from "picgo";
 import { exportFormats } from "../util/format";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import FormatListPage from "./FormatListPage";
 
 interface Props {
@@ -14,17 +14,19 @@ export default function ImagesPreviewPage({ imgs }: Props) {
     const { autoCopyAfterUpload } = getPreferenceValues<Preferences.UploadImages>();
     const validImgs = imgs.filter((i) => i.imgUrl);
 
+    useEffect(() => {
+        if (autoCopyAfterUpload) {
+            Clipboard.copy(exportFormats.url.generate(validImgs));
+            showToast({ style: Toast.Style.Success, title: "URL Copied!" });
+        }
+    }, []);
+
     if (validImgs.length === 0) {
         return (
             <Grid>
                 <Grid.EmptyView title="No Content"></Grid.EmptyView>
             </Grid>
         );
-    }
-
-    if (autoCopyAfterUpload) {
-        Clipboard.copy(exportFormats.url.generate(validImgs));
-        showToast({ style: Toast.Style.Success, title: "URL Copied!" });
     }
 
     return (
