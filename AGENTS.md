@@ -4,20 +4,47 @@ This is a [Raycast](https://raycast.com) extension wrapping [PicGo-Core](https:/
 
 ## Commands
 
-| Command            | File                              |
-| ------------------ | --------------------------------- |
-| `npm run build`    | `ray build`                       |
-| `npm run dev`      | `ray develop`                     |
-| `npm run dev:beta` | `RAY_Target=x ray develop`        |
-| `npm run lint`     | `ray lint`                        |
-| `npm run fix-lint` | `ray lint --fix`                  |
-| `npm run publish`  | publish to Raycast Store          |
+| Command                      | File                                        |
+| ---------------------------- | ------------------------------------------- |
+| `npm run build`              | `ray build`                                 |
+| `npm run dev`                | `ray develop`                               |
+| `npm run dev:beta`           | `RAY_Target=x ray develop`                  |
+| `npm run lint`               | `ray lint`                                  |
+| `npm run fix-lint`           | `ray lint --fix`                            |
+| `npm run pull-contributions` | pull upstream contributions with latest CLI |
+| `npm run publish`            | publish to Raycast Store                    |
 
 Use `npm run dev:beta` when developing against Raycast Beta/v2. The explicit `RAY_Target=x` target writes the
 compiled command entrypoints to `~/.config/raycast-x/extensions/picgo`; without it, an older Raycast CLI may write
 them to the v1 directory and Raycast Beta will report `Missing executable`.
 
 No test framework or CI is configured. `prepublishOnly` is a guard (not for npm publish).
+
+## Subsequent release workflow
+
+1. Finish the feature or bugfix and verify it with `npm run lint` and `npm run build`.
+2. Before pulling contributions, prepend the new release entry to `CHANGELOG.md`. Keep the merge-date placeholder:
+
+    ```markdown
+    ## [Short Release Title] - {PR_MERGE_DATE}
+
+    - Describe the user-visible change.
+    ```
+
+3. If another contributor changed the extension, or changes were made directly on GitHub, run
+   `npm run pull-contributions` and resolve the resulting conflicts locally.
+4. Re-run the build and lint checks after resolving conflicts.
+5. Run `npm run publish`. The latest Raycast CLI performs its own build and lint checks, updates the extension fork,
+   and opens a pull request from the fork to `raycast/extensions`. The release reaches the Raycast Store after that PR
+   is reviewed and merged.
+
+**Important:** `pull-contributions` determines which contributions to fetch from the newest version declared in the
+local `CHANGELOG.md`. Never run it before adding the new `{PR_MERGE_DATE}` entry; otherwise it can pull contribution
+code from the previous release and introduce confusing stale-code conflicts. After the previous release is merged,
+Raycast replaces its placeholder with the actual merge date, so a `CHANGELOG.md` conflict during the next pull is
+normal—preserve both the filled previous date and the new release entry.
+
+Do not use `npm publish`; `prepublishOnly` intentionally blocks it. Store releases must use `npm run publish`.
 
 ## Project structure
 
