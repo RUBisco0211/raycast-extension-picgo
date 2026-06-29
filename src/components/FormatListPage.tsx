@@ -39,7 +39,7 @@ export default function FormatListPage({ result }: Props) {
                         actions={
                             <ActionPanel>
                                 <Action.CopyToClipboard
-                                    title={`Copy ${f.label} to Clipboard`}
+                                    title={`Copy All ${f.label} to Clipboard`}
                                     content={f.generate(imgs)}
                                     shortcut={{ modifiers: ["cmd"], key: "c" }}
                                 ></Action.CopyToClipboard>

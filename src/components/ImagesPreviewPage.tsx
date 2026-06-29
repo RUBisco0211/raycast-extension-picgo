@@ -57,11 +57,11 @@ export default function ImagesPreviewPage({ imgs }: Props) {
                     actions={
                         <ActionPanel>
                             <Action.CopyToClipboard
-                                title={`Copy as ${format.label} Format`}
+                                title={`Copy ${format.label} to Clipboard`}
                                 content={format.generate([img])}
                             />
                             <Action.CopyToClipboard
-                                title={`Copy All as ${format.label} Format`}
+                                title={`Copy All ${format.label} to Clipboard`}
                                 content={format.generate(validImgs)}
                             />
                             <Action.Push
